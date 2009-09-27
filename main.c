@@ -59,6 +59,7 @@ int main(int argc, char **argv) {
             struct rlimit rlim;
             getrlimit(RLIMIT_AS, &rlim);
             rlim.rlim_cur = mem;
+            rlim.rlim_max = mem;
             if (setrlimit(RLIMIT_AS, &rlim) == -1) showError("setrlimit()");
         }
         printf("trying to run %s...\n", path);
