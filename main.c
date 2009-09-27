@@ -54,24 +54,28 @@ int main(int argc, char **argv) {
         showError("fork()");
     } else if (child == 0) {
         //child
-        printf("setting memory limit...");
-        struct rlimit rlim;
-        getrlimit(RLIMIT_AS, &rlim);
-        rlim.rlim_cur = mem;
-        if (setrlimit(RLIMIT_AS, &rlim) == -1) showError("setrlimit()");
+        if (mem != 0) {
+            printf("setting memory limit...");
+            struct rlimit rlim;
+            getrlimit(RLIMIT_AS, &rlim);
+            rlim.rlim_cur = mem;
+            if (setrlimit(RLIMIT_AS, &rlim) == -1) showError("setrlimit()");
+        }
         printf("trying to run %s...\n", path);
         execvp(path, argv + 2);
         //if running failed
         showError("execv()");
     } else {
         //parent
-        printf("sleeping for %d usecs\n", usecs);
-        usleep(usecs);
-        printf("killing child %d\n", child);
-        if (kill(child, 9) < 0) {
-            showError("kill()");
-        } else {
-            printf("child process succesfully ended\n");
+        if (usecs != 0) {
+            printf("sleeping for %d usecs\n", usecs);
+            usleep(usecs);
+            printf("killing child %d\n", child);
+            if (kill(child, 9) < 0) {
+                showError("kill()");
+            } else {
+                printf("child process succesfully ended\n");
+            }
         }
         printf("parent process succesfully ended\n");
     }
